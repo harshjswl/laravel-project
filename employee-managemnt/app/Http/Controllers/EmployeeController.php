@@ -35,7 +35,7 @@ class EmployeeController extends Controller
             'position'=>'required',
             'salary'=>'required|numeric'
         ]);
-        Employee::create($request->all);
+        Employee::create($request->all());
         return redirect()->route('employees.index')->with('success', 'Employee added successfully!');
     }
 
@@ -50,24 +50,35 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
-    }
+    public function edit(Employee $employee)
+{
+    return view('employees.edit', compact('employee'));
+}
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Employee $employee)
     {
-        //
+        $request->validate([
+            'name'=>'required',
+            'email' => 'required|email|unique:employees,email,' . $employee->id,
+            'phone' => 'nullable',
+            'position' => 'required',
+             'salary' => 'required|numeric'
+        ]);
+         $employee->update($request->all());
+    return redirect()->route('employees.index')->with('success', 'Employee updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
-    }
+   public function destroy(Employee $employee)
+{
+    $employee->delete();
+    return redirect()->route('employees.index')->with('success', 'Employee deleted successfully!');
+}
+
 }
